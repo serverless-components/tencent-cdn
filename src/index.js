@@ -121,10 +121,10 @@ class TencentCdn extends Component {
       serviceType = 'web',
       fullUrl = 'off',
       fwdHost,
-      cache = [],
+      cache,
       cacheMode = 'simple',
-      refer = [],
-      accessIp = {},
+      refer,
+      accessIp,
       https
     } = params
 
@@ -144,10 +144,17 @@ class TencentCdn extends Component {
       serviceType: serviceType,
       fullUrl: fullUrl,
       fwdHost: fwdHost || host,
-      cache: JSON.stringify(formatCache(cache)),
-      cacheMode: cacheMode,
-      refer: JSON.stringify(formatRefer(refer[0])),
-      accessIp: JSON.stringify(accessIp)
+      cacheMode: cacheMode
+    }
+
+    if (cache) {
+      cdnInputs.cache = JSON.stringify(formatCache(cache))
+    }
+    if (refer) {
+      cdnInputs.refer = JSON.stringify(formatRefer(refer[0]))
+    }
+    if (accessIp) {
+      cdnInputs.accessIp = JSON.stringify(accessIp)
     }
 
     const cdnInfo = await getCdnByHost(apig, host)
@@ -210,9 +217,9 @@ class TencentCdn extends Component {
         httpsType: 0
       }
       await SetHttpsInfo({ apig, ...httpsInputs })
-      await waitForNotStatus(apig, host)
       outputs.https = false
     }
+    await waitForNotStatus(apig, host)
 
     this.state = state
     await this.save()
