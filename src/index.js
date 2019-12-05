@@ -169,7 +169,8 @@ class TencentCdn extends Component {
 
     if (cdnInfo) {
       // update
-      this.context.debug(`The CDN domain ${host} has existed. Updating...`)
+      this.context.debug(`The CDN domain ${host} has existed.`)
+      this.context.debug(`Updating...`)
       cdnInputs.hostId = cdnInfo.id
       await UpdateCdnConfig({ apig, ...cdnInputs })
       state.hostId = cdnInfo.id
@@ -227,7 +228,7 @@ class TencentCdn extends Component {
     return outputs
   }
 
-  async remove() {
+  async remove(inputs = {}) {
     await this.initCredential()
 
     this.context.status('Removing')
@@ -241,7 +242,11 @@ class TencentCdn extends Component {
 
     const { state } = this
     // get host from cache state
-    const { host } = state
+    let { host } = state
+    if (inputs.host) {
+      // eslint-disable-next-line
+      host = inputs.host
+    }
 
     // need circle for deleting, after host status is 6, then we can delete it
     this.context.debug(`Start removing CDN for ${host}`)
