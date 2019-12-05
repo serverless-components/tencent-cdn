@@ -1,6 +1,6 @@
 # tencent-cdn
 
-Easily provision Tencent API Gateway using [Serverless Components](https://github.com/serverless/components).
+Easily provision Tencent CDN using [Serverless Components](https://github.com/serverless/components).
 
 &nbsp;
 
