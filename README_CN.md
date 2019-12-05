@@ -2,7 +2,7 @@
 
 ## 简介
 
-该组件是 serverless-tencent 组件库中的基础组件之一。通过 CDN组件，可以快速方便的创建，配置和管理腾讯云的 CDN产品。
+该组件是 serverless-tencent 组件库中的基础组件之一。通过 CDN 组件，可以快速方便的创建，配置和管理腾讯云的 CDN 产品。
 
 ## 快速开始
 
@@ -54,7 +54,7 @@ MyCDN:
       forceSwitch: -2
 ```
 
-- [点击此处查看配置文档](https://github.com/serverless-tencent/tencent-cdn/blob/master/docs/configure.md)
+- [点击此处查看配置文档](https://github.com/serverless-tencent/tencent-cdn/blob/master/docs/configure_CN.md)
 
 ### 3. 部署
 
