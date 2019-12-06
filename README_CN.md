@@ -41,11 +41,11 @@ MyCDN:
   inputs:
     host: abc.com
     hostType: cos
-    origin: ww.test.com:8080
-    backupOrigin: ww.test.com:8080
+    origin: ww.test.com
+    backupOrigin: ww.test.com
     serviceType: web
     fullUrl: on
-    fwdHost: ww.test.com:8080
+    fwdHost: ww.test.com
     https:
       cert: 123
       privateKey: 123
