@@ -60,6 +60,8 @@ MyCDN:
 
 如您的账号未[登陆](https://cloud.tencent.com/login)或[注册](https://cloud.tencent.com/register)腾讯云，您可以直接通过`微信`扫描命令行中的二维码进行授权登陆和注册。
 
+同时需要到 [内容分发网络](https://console.cloud.tencent.com/cdn) 开通该服务。
+
 通过`sls`命令进行部署，并可以添加`--debug`参数查看部署过程中的信息
 
 ```console

@@ -1,3 +1,5 @@
+const fs = require('fs')
+const path = require('path')
 const { GetHostInfoByHost } = require('./apis')
 
 function formatCache(caches) {
@@ -6,6 +8,25 @@ function formatCache(caches) {
 
 function formatRefer(refer) {
   return refer ? [refer.type, refer.list, refer.empty] : []
+}
+
+async function getPathContent(target) {
+  let content = ''
+
+  try {
+    const stat = fs.statSync(target)
+    if (stat.isFile()) {
+      if (path.isAbsolute(target)) {
+        content = fs.readFileSync(target, 'base64')
+      } else {
+        content = fs.readFileSync(path.join(process.cwd(), target), 'base64')
+      }
+    }
+  } catch (e) {
+    // target is string just return
+    content = target
+  }
+  return content
 }
 
 async function getCdnByHost(apig, host) {
@@ -44,5 +65,6 @@ module.exports = {
   formatCache,
   formatRefer,
   getCdnByHost,
-  waitForNotStatus
+  waitForNotStatus,
+  getPathContent
 }

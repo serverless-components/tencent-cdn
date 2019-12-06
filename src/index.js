@@ -4,7 +4,13 @@ const TencentLogin = require('tencent-login')
 const _ = require('lodash')
 const fs = require('fs')
 const { AddCdnHost, SetHttpsInfo, UpdateCdnConfig, OfflineHost, DeleteCdnHost } = require('./apis')
-const { formatCache, formatRefer, getCdnByHost, waitForNotStatus } = require('./utils')
+const {
+  formatCache,
+  formatRefer,
+  getCdnByHost,
+  waitForNotStatus,
+  getPathContent
+} = require('./utils')
 
 class TencentCdn extends Component {
   async doLogin() {
@@ -164,7 +170,8 @@ class TencentCdn extends Component {
     }
     const outputs = {
       host: host,
-      origin: origin
+      origin: origin,
+      cname: `${host}.cdn.dnsv1.com`
     }
 
     if (cdnInfo) {
@@ -179,7 +186,14 @@ class TencentCdn extends Component {
     } else {
       // create
       this.context.debug(`Adding CDN domain ${host}...`)
-      await AddCdnHost({ apig, ...cdnInputs })
+      try {
+        await AddCdnHost({ apig, ...cdnInputs })
+      } catch (e) {
+        if (e.code === 9111) {
+          this.context.debug(`Please goto https://console.cloud.tencent.com/cdn open CDN service.`)
+        }
+        throw e
+      }
       const { id } = await getCdnByHost(apig, host)
       state.hostId = id
       outputs.created = true
@@ -204,8 +218,10 @@ class TencentCdn extends Component {
       if (https.certId) {
         httpsInputs.certId = https.certId
       } else {
-        httpsInputs.cert = https.cert
-        httpsInputs.privateKey = https.privateKey
+        const certContent = await getPathContent(https.cert)
+        const privateKeyContent = await getPathContent(https.privateKey)
+        httpsInputs.cert = certContent
+        httpsInputs.privateKey = privateKeyContent
       }
 
       await SetHttpsInfo({ apig, ...httpsInputs })

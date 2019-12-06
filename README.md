@@ -41,6 +41,8 @@ TENCENT_SECRET_KEY=XXX
 
 - If you don't have a Tencent Cloud account, you could [sign up](https://intl.cloud.tencent.com/register) first.
 
+Also should goto [CDN Service Page](https://console.cloud.tencent.com/cdn), and open CDN service。
+
 ### 3. Configure
 
 ```yml
