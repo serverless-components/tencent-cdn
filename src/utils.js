@@ -2,6 +2,21 @@ const fs = require('fs')
 const path = require('path')
 const { GetHostInfoByHost } = require('./apis')
 
+function isEmpty(val) {
+  return val === undefined || val === null || (typeof val === 'number' && isNaN(val))
+}
+
+function cleanEmptyValue(obj) {
+  const newObj = {}
+  for (const key in obj) {
+    const val = obj[key]
+    if (!isEmpty(val)) {
+      newObj[key] = val
+    }
+  }
+  return newObj
+}
+
 function formatCache(caches) {
   return caches.map((cache) => [cache.type, cache.rule, cache.time])
 }
@@ -62,6 +77,8 @@ async function waitForNotStatus(apig, host, resolve1 = null, reject1 = null) {
 }
 
 module.exports = {
+  isEmpty,
+  cleanEmptyValue,
   formatCache,
   formatRefer,
   getCdnByHost,

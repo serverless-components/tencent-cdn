@@ -177,7 +177,7 @@ class TencentCdn extends Component {
     if (cdnInfo) {
       // update
       this.context.debug(`The CDN domain ${host} has existed.`)
-      this.context.debug(`Updating...`)
+      this.context.debug('Updating...')
       cdnInputs.hostId = cdnInfo.id
       await UpdateCdnConfig({ apig, ...cdnInputs })
       state.hostId = cdnInfo.id

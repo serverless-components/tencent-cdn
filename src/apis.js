@@ -1,3 +1,5 @@
+const { cleanEmptyValue } = require('./utils')
+
 function HttpError(code, message) {
   this.code = code || 0
   this.message = message || ''
@@ -9,6 +11,7 @@ function apiFactory(actions) {
   const apis = {}
   actions.forEach((action) => {
     apis[action] = ({ apig, ...inputs }) => {
+      inputs = cleanEmptyValue(inputs)
       return new Promise((resolve, reject) => {
         apig.request(
           {
