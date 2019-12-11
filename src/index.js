@@ -1,8 +1,6 @@
 const { Component } = require('@serverless/core')
-const Capi = require('qcloudapi-sdk')
-const TencentLogin = require('tencent-login')
-const _ = require('lodash')
-const fs = require('fs')
+const { Capi } = require('@tencent-sdk/capi')
+const { getTempKey } = require('./login')
 const { AddCdnHost, SetHttpsInfo, UpdateCdnConfig, OfflineHost, DeleteCdnHost } = require('./apis')
 const {
   formatCache,
@@ -13,102 +11,13 @@ const {
 } = require('./utils')
 
 class TencentCdn extends Component {
-  async doLogin() {
-    const login = new TencentLogin()
-    const tencent_credentials = await login.login()
-    if (tencent_credentials) {
-      tencent_credentials.timestamp = Date.now() / 1000
-      try {
-        const tencent = {
-          SecretId: tencent_credentials.secret_id,
-          SecretKey: tencent_credentials.secret_key,
-          AppId: tencent_credentials.appid,
-          token: tencent_credentials.token,
-          expired: tencent_credentials.expired,
-          signature: tencent_credentials.signature,
-          uuid: tencent_credentials.uuid,
-          timestamp: tencent_credentials.timestamp
-        }
-        await fs.writeFileSync('./.env_temp', JSON.stringify(tencent))
-        return tencent
-      } catch (e) {
-        throw 'Error getting temporary key: ' + e
-      }
-    }
-  }
-
-  async sleep(ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms)
-    })
-  }
-
-  async getTempKey(temp) {
-    const that = this
-
-    if (temp) {
-      while (true) {
-        try {
-          const tencent_credentials_read = JSON.parse(await fs.readFileSync('./.env_temp', 'utf8'))
-          if (
-            Date.now() / 1000 - tencent_credentials_read.timestamp <= 6000 &&
-            tencent_credentials_read.AppId
-          ) {
-            return tencent_credentials_read
-          }
-          await that.sleep(1000)
-        } catch (e) {
-          await that.sleep(1000)
-        }
-      }
-    }
-
-    try {
-      const data = await fs.readFileSync('./.env_temp', 'utf8')
-      try {
-        const tencent = {}
-        const tencent_credentials_read = JSON.parse(data)
-        if (
-          Date.now() / 1000 - tencent_credentials_read.timestamp <= 6000 &&
-          tencent_credentials_read.AppId
-        ) {
-          return tencent_credentials_read
-        }
-        const login = new TencentLogin()
-        const tencent_credentials_flush = await login.flush(
-          tencent_credentials_read.uuid,
-          tencent_credentials_read.expired,
-          tencent_credentials_read.signature,
-          tencent_credentials_read.AppId
-        )
-        if (tencent_credentials_flush) {
-          tencent.SecretId = tencent_credentials_flush.secret_id
-          tencent.SecretKey = tencent_credentials_flush.secret_key
-          tencent.AppId = tencent_credentials_flush.appid
-          tencent.token = tencent_credentials_flush.token
-          tencent.expired = tencent_credentials_flush.expired
-          tencent.signature = tencent_credentials_flush.signature
-          tencent.uuid = tencent_credentials_read.uuid
-          tencent.timestamp = Date.now() / 1000
-          await fs.writeFileSync('./.env_temp', JSON.stringify(tencent))
-          return tencent
-        }
-        return await that.doLogin()
-      } catch (e) {
-        return await that.doLogin()
-      }
-    } catch (e) {
-      return await that.doLogin()
-    }
-  }
-
   async initCredential() {
     // login
     const temp = this.context.instance.state.status
     this.context.instance.state.status = true
     let { tencent } = this.context.credentials
     if (!tencent) {
-      tencent = await this.getTempKey(temp)
+      tencent = await getTempKey(temp)
       this.context.credentials.tencent = tencent
     }
   }
@@ -118,7 +27,6 @@ class TencentCdn extends Component {
     this.context.status('Deploying')
 
     inputs.projectId = 0
-    const params = _.cloneDeep(inputs)
     const {
       host,
       hostType,
@@ -132,13 +40,13 @@ class TencentCdn extends Component {
       refer,
       accessIp,
       https
-    } = params
+    } = inputs
 
-    const apig = new Capi({
+    const capi = new Capi({
+      AppId: this.context.credentials.tencent.AppId,
       SecretId: this.context.credentials.tencent.SecretId,
       SecretKey: this.context.credentials.tencent.SecretKey,
-      serviceType: 'cdn',
-      Token: this.context.credentials.tencent.token
+      Token: this.context.credentials.tencent.Token
     })
 
     const cdnInputs = {
@@ -163,10 +71,11 @@ class TencentCdn extends Component {
       cdnInputs.accessIp = JSON.stringify(accessIp)
     }
 
-    const cdnInfo = await getCdnByHost(apig, host)
+    const cdnInfo = await getCdnByHost(capi, host)
     const state = {
       host: host,
-      origin: origin
+      origin: origin,
+      cname: `${host}.cdn.dnsv1.com`
     }
     const outputs = {
       host: host,
@@ -179,7 +88,7 @@ class TencentCdn extends Component {
       this.context.debug(`The CDN domain ${host} has existed.`)
       this.context.debug('Updating...')
       cdnInputs.hostId = cdnInfo.id
-      await UpdateCdnConfig({ apig, ...cdnInputs })
+      await UpdateCdnConfig(capi, cdnInputs)
       state.hostId = cdnInfo.id
       outputs.updated = true
       outputs.hostId = cdnInfo.id
@@ -187,14 +96,14 @@ class TencentCdn extends Component {
       // create
       this.context.debug(`Adding CDN domain ${host}...`)
       try {
-        await AddCdnHost({ apig, ...cdnInputs })
+        await AddCdnHost(capi, cdnInputs)
       } catch (e) {
         if (e.code === 9111) {
           this.context.debug(`Please goto https://console.cloud.tencent.com/cdn open CDN service.`)
         }
         throw e
       }
-      const { id } = await getCdnByHost(apig, host)
+      const { id } = await getCdnByHost(capi, host)
       state.hostId = id
       outputs.created = true
       outputs.hostId = id
@@ -202,7 +111,7 @@ class TencentCdn extends Component {
 
     // state=4: deploying status, we can not do any operation
     this.context.debug('Waiting for CDN deploy success...')
-    await waitForNotStatus(apig, host)
+    await waitForNotStatus(capi, host)
     this.context.debug(`CDN deploy success to host: ${host}`)
 
     if (https) {
@@ -224,7 +133,7 @@ class TencentCdn extends Component {
         httpsInputs.privateKey = privateKeyContent
       }
 
-      await SetHttpsInfo({ apig, ...httpsInputs })
+      await SetHttpsInfo(capi, httpsInputs)
       outputs.https = true
     } else {
       this.context.debug(`Removing https for ${host}...`)
@@ -233,10 +142,10 @@ class TencentCdn extends Component {
         host: host,
         httpsType: 0
       }
-      await SetHttpsInfo({ apig, ...httpsInputs })
+      await SetHttpsInfo(capi, httpsInputs)
       outputs.https = false
     }
-    await waitForNotStatus(apig, host)
+    await waitForNotStatus(capi, host)
 
     this.state = state
     await this.save()
@@ -249,11 +158,10 @@ class TencentCdn extends Component {
 
     this.context.status('Removing')
 
-    const apig = new Capi({
+    const capi = new Capi({
       SecretId: this.context.credentials.tencent.SecretId,
       SecretKey: this.context.credentials.tencent.SecretKey,
-      serviceType: 'cdn',
-      Token: this.context.credentials.tencent.token
+      Token: this.context.credentials.tencent.Token
     })
 
     const { state } = this
@@ -266,28 +174,22 @@ class TencentCdn extends Component {
 
     // need circle for deleting, after host status is 6, then we can delete it
     this.context.debug(`Start removing CDN for ${host}`)
-    const { status } = await getCdnByHost(apig, host)
+    const { status } = await getCdnByHost(capi, host)
     state.status = status
     // status=5: online
     // state=4: deploying
     // state=6: offline
     if (status === 5) {
       // disable first
-      await OfflineHost({
-        apig,
-        host: host
-      })
+      await OfflineHost(capi, { host: host })
       this.context.debug(`Waiting for offline ${host}...`)
-      await waitForNotStatus(apig, host)
+      await waitForNotStatus(capi, host)
     } else if (status === 4) {
       this.context.debug(`Waiting for operational status for ${host}...`)
-      await waitForNotStatus(apig, host)
+      await waitForNotStatus(capi, host)
     }
     this.context.debug(`Removing CDN for ${host}`)
-    await DeleteCdnHost({
-      apig: apig,
-      host: host
-    })
+    await DeleteCdnHost(capi, { host: host })
     this.context.debug(`Removed CDN for ${host}.`)
     this.state = {}
     await this.save()
