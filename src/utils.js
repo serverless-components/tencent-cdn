@@ -2,19 +2,12 @@ const fs = require('fs')
 const path = require('path')
 const { GetHostInfoByHost } = require('./apis')
 
-function isEmpty(val) {
-  return val === undefined || val === null || (typeof val === 'number' && isNaN(val))
-}
+const ONE_SECOND = 1000
 
-function cleanEmptyValue(obj) {
-  const newObj = {}
-  for (const key in obj) {
-    const val = obj[key]
-    if (!isEmpty(val)) {
-      newObj[key] = val
-    }
-  }
-  return newObj
+async function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
 }
 
 function formatCache(caches) {
@@ -44,31 +37,29 @@ async function getPathContent(target) {
   return content
 }
 
-async function getCdnByHost(apig, host) {
-  const res = await GetHostInfoByHost({
-    apig,
-    ...{
-      hosts: [host]
-    }
+async function getCdnByHost(capi, host) {
+  const { data } = await GetHostInfoByHost(capi, {
+    hosts: [host]
   })
 
-  if (res && res.hosts.length) {
-    return res.hosts[0]
+  if (data && data.hosts.length) {
+    return data.hosts[0]
   }
   return undefined
 }
 
-async function waitForNotStatus(apig, host, resolve1 = null, reject1 = null) {
+async function waitForNotStatus(capi, host, resolve1 = null, reject1 = null) {
   return new Promise(async (resolve, reject) => {
     try {
       resolve = resolve1 || resolve
       reject = reject1 || reject
-      const { id, status } = await getCdnByHost(apig, host)
+      const { id, status } = await getCdnByHost(capi, host)
       // 4: deploying, 1: created
       if (status !== 4 && status !== 1) {
         resolve(id)
       } else {
-        return waitForNotStatus(apig, host, resolve, reject)
+        await sleep(ONE_SECOND * 5)
+        return waitForNotStatus(capi, host, resolve, reject)
       }
     } catch (e) {
       reject(e)
@@ -77,8 +68,8 @@ async function waitForNotStatus(apig, host, resolve1 = null, reject1 = null) {
 }
 
 module.exports = {
-  isEmpty,
-  cleanEmptyValue,
+  ONE_SECOND,
+  sleep,
   formatCache,
   formatRefer,
   getCdnByHost,
