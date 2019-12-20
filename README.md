@@ -1,4 +1,4 @@
-# tencent-cdn
+# Tencent CDN Component
 
 Easily provision Tencent CDN using [Serverless Components](https://github.com/serverless/components).
 
