@@ -1,4 +1,4 @@
-# 腾讯云 API 网关组件
+# 腾讯云 CDN 组件
 
 ## 简介
 
@@ -7,8 +7,6 @@
 ## 快速开始
 
 &nbsp;
-
-通过 API 网关组件，对一个 API 服务/接口进行完整的创建，配置，部署和删除等操作。支持命令如下：
 
 1. [安装](#1-安装)
 2. [配置](#2-配置)
@@ -54,7 +52,7 @@ MyCDN:
       forceSwitch: -2
 ```
 
-- [点击此处查看配置文档](https://github.com/serverless-tencent/tencent-cdn/blob/master/docs/configure_CN.md)
+- [点击此处查看配置文档](https://github.com/serverless-tencent/tencent-cdn/blob/master/docs/configure.md)
 
 ### 3. 部署
 
@@ -90,7 +88,7 @@ $ sls --debug
 
 ### 4. 移除
 
-通过以下命令移除部署的 API 网关
+通过以下命令移除部署的 CDN 配置：
 
 ```console
 $ sls remove --debug
