@@ -1,6 +1,6 @@
 const { Component } = require('@serverless/core')
 const { Capi } = require('@tencent-sdk/capi')
-const { getTempKey } = require('./login')
+const tencentAuth = require('serverless-tencent-auth-tool')
 const { AddCdnHost, SetHttpsInfo, UpdateCdnConfig, OfflineHost, DeleteCdnHost } = require('./apis')
 const {
   formatCache,
@@ -13,18 +13,15 @@ const {
 class TencentCdn extends Component {
   async initCredential() {
     // login
-    const temp = this.context.instance.state.status
-    this.context.instance.state.status = true
-    let { tencent } = this.context.credentials
-    if (!tencent) {
-      tencent = await getTempKey(temp)
-      this.context.credentials.tencent = tencent
+    const auth = new tencentAuth()
+    this.context.credentials.tencent = await auth.doAuth(this.context.credentials.tencent)
+    if (this.context.credentials.tencent && this.context.credentials.tencent.token) {
+      this.context.credentials.tencent.Token = this.context.credentials.tencent.token
     }
   }
 
   async default(inputs = {}) {
     await this.initCredential()
-    this.context.status('Deploying')
 
     inputs.projectId = 0
     const {
