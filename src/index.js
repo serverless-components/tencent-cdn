@@ -14,7 +14,7 @@ class TencentCdn extends Component {
   async initCredential() {
     // login
     const auth = new tencentAuth()
-    this.context.credentials.tencent = await auth.doAuth(this.context.credentials.tencent)
+    this.context.credentials.tencent = await auth.doAuth(this.context.credentials.tencent, 'tencent-cdn')
     if (this.context.credentials.tencent && this.context.credentials.tencent.token) {
       this.context.credentials.tencent.Token = this.context.credentials.tencent.token
     }
