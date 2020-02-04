@@ -1,7 +1,7 @@
 {
   "name": "@serverless/tencent-cdn",
   "description": "Tencent Cloud CDN Component",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "serverless.js",
   "publishConfig": {
     "access": "public"
@@ -48,7 +48,7 @@
   "dependencies": {
     "@serverless/core": "^1.0.0",
     "@tencent-sdk/capi": "^0.2.9",
-    "serverless-tencent-auth-tool": "^1.0.0"
+    "serverless-tencent-auth-tool": "^1.0.14"
   },
   "devDependencies": {
     "babel-eslint": "9.0.0",

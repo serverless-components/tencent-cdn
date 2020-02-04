@@ -11,17 +11,22 @@ const {
 } = require('./utils')
 
 class TencentCdn extends Component {
-  async initCredential() {
+  async initCredential(inputs, action) {
     // login
     const auth = new tencentAuth()
-    this.context.credentials.tencent = await auth.doAuth(this.context.credentials.tencent, 'tencent-cdn')
+    this.context.credentials.tencent = await auth.doAuth(this.context.credentials.tencent, {
+      client: 'tencent-cdn',
+      remark: inputs.fromClientRemark,
+      project: this.context.instance ? this.context.instance.id : undefined,
+      action: action
+    })
     if (this.context.credentials.tencent && this.context.credentials.tencent.token) {
       this.context.credentials.tencent.Token = this.context.credentials.tencent.token
     }
   }
 
   async default(inputs = {}) {
-    await this.initCredential()
+    await this.initCredential(inputs, 'default')
 
     inputs.projectId = 0
     const {
@@ -151,7 +156,7 @@ class TencentCdn extends Component {
   }
 
   async remove(inputs = {}) {
-    await this.initCredential()
+    await this.initCredential(inputs, 'default')
 
     this.context.status('Removing')
 
