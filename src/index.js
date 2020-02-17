@@ -74,10 +74,23 @@ class TencentCdn extends Component {
     }
 
     const cdnInfo = await getCdnByHost(capi, host)
+
+    const sourceInputs = JSON.parse(JSON.stringify(inputs))
+    const sourceHttpsConf = sourceInputs.https
+    const sourceBaseConf = {}
+    Object.keys(sourceInputs).forEach((key) => {
+      if (key !== 'https') {
+        sourceBaseConf[key] = sourceInputs[key]
+      }
+    })
     const state = {
       host: host,
       origin: origin,
-      cname: `${host}.cdn.dnsv1.com`
+      cname: `${host}.cdn.dnsv1.com`,
+      inputCache: {
+        base: JSON.stringify(sourceBaseConf),
+        https: JSON.stringify(sourceHttpsConf)
+      }
     }
     const outputs = {
       host: host,
@@ -85,69 +98,90 @@ class TencentCdn extends Component {
       cname: `${host}.cdn.dnsv1.com`
     }
 
-    if (cdnInfo) {
-      // update
-      this.context.debug(`The CDN domain ${host} has existed.`)
-      this.context.debug('Updating...')
-      cdnInputs.hostId = cdnInfo.id
-      await UpdateCdnConfig(capi, cdnInputs)
-      state.hostId = cdnInfo.id
-      outputs.updated = true
+    const createOrUpdateCdn = async () => {
+      if (cdnInfo) {
+        // update
+        this.context.debug(`The CDN domain ${host} has existed.`)
+        this.context.debug('Updating...')
+        cdnInputs.hostId = cdnInfo.id
+        await UpdateCdnConfig(capi, cdnInputs)
+        state.hostId = cdnInfo.id
+        state.updated = true
+        outputs.hostId = cdnInfo.id
+      } else {
+        // create
+        this.context.debug(`Adding CDN domain ${host}...`)
+        try {
+          await AddCdnHost(capi, cdnInputs)
+        } catch (e) {
+          if (e.code === 9111) {
+            this.context.debug(
+              `Please goto https://console.cloud.tencent.com/cdn open CDN service.`
+            )
+          }
+          throw e
+        }
+        const { id } = await getCdnByHost(capi, host)
+        state.hostId = id
+        state.created = true
+        outputs.hostId = id
+      }
+
+      // state=4: deploying status, we can not do any operation
+      this.context.debug('Waiting for CDN deploy success...')
+      await waitForNotStatus(capi, host)
+      this.context.debug(`CDN deploy success to host: ${host}`)
+    }
+
+    const creatOrUpdateHttps = async () => {
+      if (https) {
+        this.context.debug(`Setup https for ${host}...`)
+        // update https
+        const httpsInputs = {
+          host: host,
+          httpsType: https.httpsType,
+          forceSwitch: https.forceSwitch,
+          http2: https.http2
+        }
+        // if set certId, it is prefered
+        if (https.certId) {
+          httpsInputs.certId = https.certId
+        } else {
+          const certContent = await getPathContent(https.cert)
+          const privateKeyContent = await getPathContent(https.privateKey)
+          httpsInputs.cert = certContent
+          httpsInputs.privateKey = privateKeyContent
+        }
+
+        await SetHttpsInfo(capi, httpsInputs)
+        outputs.https = true
+      } else {
+        this.context.debug(`Removing https for ${host}...`)
+        // delete https
+        const httpsInputs = {
+          host: host,
+          httpsType: 0
+        }
+        await SetHttpsInfo(capi, httpsInputs)
+        outputs.https = false
+      }
+      await waitForNotStatus(capi, host)
+    }
+
+    const { inputCache } = this.state
+    if (inputCache && inputCache.base === JSON.stringify(sourceBaseConf)) {
+      this.context.debug(`No base configuration changes for CDN domain ${host}`)
       outputs.hostId = cdnInfo.id
     } else {
-      // create
-      this.context.debug(`Adding CDN domain ${host}...`)
-      try {
-        await AddCdnHost(capi, cdnInputs)
-      } catch (e) {
-        if (e.code === 9111) {
-          this.context.debug(`Please goto https://console.cloud.tencent.com/cdn open CDN service.`)
-        }
-        throw e
-      }
-      const { id } = await getCdnByHost(capi, host)
-      state.hostId = id
-      outputs.created = true
-      outputs.hostId = id
+      await createOrUpdateCdn()
     }
 
-    // state=4: deploying status, we can not do any operation
-    this.context.debug('Waiting for CDN deploy success...')
-    await waitForNotStatus(capi, host)
-    this.context.debug(`CDN deploy success to host: ${host}`)
-
-    if (https) {
-      this.context.debug(`Setup https for ${host}...`)
-      // update https
-      const httpsInputs = {
-        host: host,
-        httpsType: https.httpsType,
-        forceSwitch: https.forceSwitch,
-        http2: https.http2
-      }
-      // if set certId, it is prefered
-      if (https.certId) {
-        httpsInputs.certId = https.certId
-      } else {
-        const certContent = await getPathContent(https.cert)
-        const privateKeyContent = await getPathContent(https.privateKey)
-        httpsInputs.cert = certContent
-        httpsInputs.privateKey = privateKeyContent
-      }
-
-      await SetHttpsInfo(capi, httpsInputs)
-      outputs.https = true
+    if (inputCache && inputCache.https === JSON.stringify(sourceHttpsConf)) {
+      this.context.debug(`No https configuration changes for CDN domain ${host}`)
+      outputs.https = !!sourceHttpsConf
     } else {
-      this.context.debug(`Removing https for ${host}...`)
-      // delete https
-      const httpsInputs = {
-        host: host,
-        httpsType: 0
-      }
-      await SetHttpsInfo(capi, httpsInputs)
-      outputs.https = false
+      await creatOrUpdateHttps()
     }
-    await waitForNotStatus(capi, host)
 
     this.state = state
     await this.save()

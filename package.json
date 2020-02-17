@@ -31,6 +31,9 @@
       "pre-commit": "lint-staged"
     }
   },
+  "engines": {
+    "node": ">=8.9"
+  },
   "lint-staged": {
     "*.js": [
       "eslint"
