@@ -190,7 +190,7 @@ class TencentCdn extends Component {
   }
 
   async remove(inputs = {}) {
-    await this.initCredential(inputs, 'default')
+    await this.initCredential(inputs, 'remove')
 
     this.context.status('Removing')
 
