@@ -1,0 +1,21 @@
+component: cdn@dev
+name: cdnDemo
+org: orgDemo
+app: appDemo
+stage: dev
+
+inputs:
+  domain: abc.com
+  async: true
+  autoRefesh: true
+  forceRedirect:
+    switch: on
+    redirectType: https
+    redirectStatusCode: 301
+  https:
+    switch: on
+    http2: on
+    certInfo:
+      certId: 'abc'
+      # certificate: 'xxx'
+      # privateKey: 'xxx'

@@ -1,69 +1,58 @@
 {
-  "name": "@serverless/tencent-cdn",
-  "description": "Tencent Cloud CDN Component",
-  "version": "0.1.5",
-  "main": "serverless.js",
+  "name": "@serverless/cdn",
+  "version": "0.0.1",
+  "main": "src/serverless.js",
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [
-    "cdn",
-    "serverless",
-    "serverless-component",
-    "serverlesscomponent",
-    "tencent"
-  ],
   "scripts": {
+    "test": "npm run lint && npm run prettier",
     "commitlint": "commitlint -f HEAD@{15}",
-    "commitlint-ci-pull-request": "commitlint -f HEAD~1",
-    "lint": "eslint . --cache",
-    "lint:updated": "pipe-git-updated --ext=js -- eslint --cache",
-    "prepare-release": "standard-version && prettier --write CHANGELOG.md",
-    "prettier-check": "prettier -c --ignore-path .gitignore \"**/*.{css,html,js,json,md,yaml,yml}\"",
-    "prettier-check:updated": "pipe-git-updated --ext=css --ext=html --ext=js --ext=json --ext=md --ext=yaml --ext=yml -- prettier -c",
-    "prettify": "prettier --write --ignore-path .gitignore \"**/*.{css,html,js,json,md,yaml,yml}\"",
-    "prettify:updated": "pipe-git-updated --ext=css --ext=html --ext=js --ext=json --ext=md --ext=yaml --ext=yml -- prettier --write"
+    "lint": "eslint --ext .js,.ts,.tsx .",
+    "lint:fix": "eslint --fix --ext .js,.ts,.tsx .",
+    "prettier": "prettier --check **/*.{css,html,js,json,md,yaml,yml}",
+    "prettier:fix": "prettier --write **/*.{css,html,js,json,md,yaml,yml}",
+    "release": "semantic-release",
+    "release-local": "node -r dotenv/config node_modules/semantic-release/bin/semantic-release --no-ci --dry-run",
+    "check-dependencies": "npx npm-check --skip-unused --update"
   },
-  "author": "Tencent Cloud, Inc.",
-  "license": "Apache",
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-push": "npm run lint:fix && npm run prettier:fix"
     }
-  },
-  "engines": {
-    "node": ">=8.9"
   },
   "lint-staged": {
-    "*.js": [
-      "eslint"
+    "**/*.{js,ts,tsx}": [
+      "npm run lint:fix",
+      "git add ."
     ],
-    "*.{css,html,js,json,md,yaml,yml}": [
-      "prettier -c"
+    "**/*.{css,html,js,json,md,yaml,yml}": [
+      "npm run prettier:fix",
+      "git add ."
     ]
   },
-  "standard-version": {
-    "skip": {
-      "commit": true,
-      "tag": true
-    }
-  },
-  "dependencies": {
-    "@serverless/core": "^1.0.0",
-    "@tencent-sdk/capi": "^0.2.9",
-    "serverless-tencent-auth-tool": "^1.0.14"
-  },
+  "author": "Tencent Cloud, Inc.",
+  "license": "MIT",
+  "dependencies": {},
   "devDependencies": {
-    "babel-eslint": "9.0.0",
-    "eslint": "5.6.0",
-    "eslint-config-prettier": "^3.6.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-prettier": "^3.0.1",
-    "git-list-updated": "^1.2.1",
-    "github-release-from-cc-changelog": "^2.2.0",
-    "husky": "^3.1.0",
-    "lint-staged": "^9.5.0",
-    "prettier": "^1.15.3",
-    "standard-version": "^7.0.1"
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
+    "@semantic-release/changelog": "^5.0.0",
+    "@semantic-release/commit-analyzer": "^8.0.1",
+    "@semantic-release/git": "^9.0.0",
+    "@semantic-release/npm": "^7.0.4",
+    "@semantic-release/release-notes-generator": "^9.0.1",
+    "babel-eslint": "^10.1.0",
+    "dotenv": "^8.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.8",
+    "prettier": "^1.19.1",
+    "semantic-release": "^17.0.4"
   }
 }

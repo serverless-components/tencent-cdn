@@ -1,12 +1,10 @@
 # 腾讯云 CDN 组件
 
-&nbsp;
-
-- [请点击这里查看英文版部署文档](./README_EN.md)
+简体中文 | [English](./README.en.md)
 
 ## 简介
 
-该组件是 serverless-tencent 组件库中的基础组件之一。通过 CDN 组件，可以快速方便的创建，配置和管理腾讯云的 CDN 产品。
+通过 CDN 组件，可以快速方便的创建，配置和管理腾讯云的 CDN 产品。
 
 ## 快速开始
 
@@ -38,25 +36,28 @@ $ touch serverless.yml
 ```yml
 # serverless.yml
 
-MyCDN:
-  component: '@serverless/tencent-cdn'
-  inputs:
-    host: abc.com
-    hostType: cos
-    origin: ww.test.com
-    backupOrigin: ww.test.com
-    serviceType: web
-    fullUrl: on
-    fwdHost: ww.test.com
-    https:
-      cert: 123
-      privateKey: 123
-      http2: off
-      httpsType: 2
-      forceSwitch: -2
+component: cdn
+name: cdnDemo
+org: orgDemo
+app: appDemo
+stage: dev
+
+inputs:
+  domain: abc.com
+  async: true
+  autoRefesh: true
+  forceRedirect:
+    switch: on
+    redirectType: https
+    redirectStatusCode: 301
+  https:
+    switch: on
+    http2: on
+    certInfo:
+      certId: 'abc'
 ```
 
-- [点击此处查看配置文档](https://github.com/serverless-tencent/tencent-cdn/blob/master/docs/configure.md)
+- [更多配置](./docs/configure.md)
 
 ### 3. 部署
 
@@ -64,46 +65,16 @@ MyCDN:
 
 同时需要到 [内容分发网络](https://console.cloud.tencent.com/cdn) 开通该服务。
 
-通过`sls`命令进行部署，并可以添加`--debug`参数查看部署过程中的信息
-
-```console
-$ sls --debug
-
-  DEBUG ─ Resolving the template's static variables.
-  DEBUG ─ Collecting components from the template.
-  DEBUG ─ Downloading any NPM components found in the template.
-  DEBUG ─ Analyzing the template's components dependencies.
-  DEBUG ─ Creating the template's components graph.
-  DEBUG ─ Syncing template state.
-  DEBUG ─ Executing the template's components graph.
-  DEBUG ─ The CDN domain fullstack.yugasun.com has existed. Updating...
-  DEBUG ─ Waiting for CDN deploy success...
-  DEBUG ─ CDN deploy success to host: fullstack.yugasun.com
-  DEBUG ─ Setup https for fullstack.yugasun.com...
-
-  MyCDN:
-    host:   fullstack.yugasun.com
-    origin: rahbqkq-a81kuv2-1251556596.cos-website.ap-guangzhou.myqcloud.com
-    hostId: 1714502
-    https:  true
-
-  100s › MyCDN › done
+```bash
+$ sls deploy
 ```
 
 ### 4. 移除
 
 通过以下命令移除部署的 CDN 配置：
 
-```console
-$ sls remove --debug
-
-  DEBUG ─ Flushing template state and removing all components.
-  DEBUG ─ Start removing CDN for fullstack.yugasun.com
-  DEBUG ─ Waiting for offline fullstack.yugasun.com...
-  DEBUG ─ Removing CDN for fullstack.yugasun.com
-  DEBUG ─ Removed CDN for fullstack.yugasun.com.
-
-  73s › MyCDN › done
+```bash
+$ sls remove
 ```
 
 ### 账号配置（可选）
@@ -129,4 +100,3 @@ TENCENT_SECRET_KEY=123
 ### 还支持哪些组件？
 
 可以在 [Serverless Components](https://github.com/serverless/components) repo 中查询更多组件的信息。
-
