@@ -1,5 +1,5 @@
 name: cdn
-version: 0.0.0-dev
+version: 0.0.1
 author: Tencent Cloud, Inc
 org: Tencent Cloud, Inc
 description: Easily provision Tencent CDN.

@@ -1,4 +1,4 @@
-component: cdn@dev
+component: cdn
 name: cdnDemo
 org: orgDemo
 app: appDemo

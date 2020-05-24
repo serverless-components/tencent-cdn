@@ -33,7 +33,7 @@ class ServerlessComponent extends Component {
     const outputs = {
       domain: inputs.domain,
       cname: `${inputs.domain}.cdn.dnsv1.com`,
-      origin: deployRes.origin
+      origins: deployRes.origins
     }
 
     return outputs
