@@ -15,11 +15,12 @@ inputs:
   domain: abc.com
   async: true
   onlyRefresh: false
-  autoRefesh: true
   refreshCdn:
     urls:
       - https://abc.com
-      - http://abc.com
+  pushCdn:
+    urls:
+      - https://abc.com
   cache:
     simpleCache:
       followOrigin: on
@@ -65,9 +66,9 @@ inputs:
 | 参数名称   | 是否必选 | 默认    | 描述                                                                              |
 | ---------- | -------- | ------- | --------------------------------------------------------------------------------- |
 | async      | 否       | `false` | 是否为异步操作，如果为 true，则不会等待 CDN 创建或更新成功再返回，                |
-| autoRefesh | 否       | `false` | 是否自动刷新预热 CDN                                                              |
 | onlyRefesh | 否       | `false` | 是否只刷新预热 CDN，如果为 `true`，那么只进行刷新预热操作，不会更新 CDN 配置      |
 | refreshCdn | 否       |         | 刷新 CDN 相关配置，参考 [refreshCdn](#refreshCdn)                                 |
+| pushCdn    | 否       |         | 预热 CDN 相关配置，参考 [pushCdn](#pushCdn)                                       |
 | host       | 是       |         | 需要接入的 CDN 域名。                                                             |
 | host       | 是       |         | 需要接入的 CDN 域名。                                                             |
 | https      | 否       |         | Https 加速配置，参考：https://cloud.tencent.com/document/api/228/30987#Https      |
@@ -82,6 +83,12 @@ inputs:
 
 | 参数名称 | 是否必选 | 默认 | 描述                |
 | -------- | -------- | ---- | ------------------- |
-| urls     | 否       | []   | 需要刷新的 CDN URLs |
+| urls     | 否       | []   | 需要刷新的 CDN 目录 |
+
+#### pushCdn
+
+| 参数名称 | 是否必选 | 默认 | 描述                |
+| -------- | -------- | ---- | ------------------- |
+| urls     | 否       | []   | 需要预热的 CDN URLs |
 
 更多配置，请移至官方云 API 文档：https://cloud.tencent.com/document/product/228/41123

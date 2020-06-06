@@ -45,7 +45,9 @@ stage: dev
 inputs:
   domain: abc.com
   async: true
-  autoRefesh: true
+  refreshCdn:
+    urls:
+      - https://abc.com
   forceRedirect:
     switch: on
     redirectType: https
