@@ -54,24 +54,12 @@ stage: dev
 
 inputs:
   area: overseas
-  domain: fullstack.yugasun.com
+  domain: abc.com
   origin:
     origins:
-      - up6pwd9-89hm718-xxx.cos-website.ap-guangzhou.myqcloud.com
+      - xxx.cos-website.ap-guangzhou.myqcloud.com
     originType: cos
-    originPullProtocol: https
-  serviceType: web
-  forceRedirect:
-    switch: on
-    redirectType: https
-    redirectStatusCode: 301
-  https:
-    switch: on
-    http2: on
-    certInfo:
-      certId: 'abc'
-      # certificate: 'xxx'
-      # privateKey: 'xxx'
+    originPullProtocol: http
 ```
 
 - [More configuration](./docs/configure.md)
