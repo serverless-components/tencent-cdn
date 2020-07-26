@@ -78,8 +78,8 @@ inputs:
 | serviceType | 否       | `web`      | 加速域名业务类型。web：静态加速，download：下载加速，media：流媒体点播加速                                                                   |
 | async       | 否       | `false`    | 是否为异步操作，如果为 true，则不会等待 CDN 创建或更新成功再返回。                                                                           |
 | onlyRefresh | 否       | `false`    | 是否只刷新预热 CDN，如果为 `true`，那么只进行刷新操作，不会更新 CDN 配置                                                                     |
-| refreshCdn  | 否       |            | 刷新 CDN 相关配置，参考 [refreshCdn](#refreshCdn)                                                                                            |
-| pushCdn     | 否       |            | 预热 CDN 相关配置，参考 [pushCdn](#pushCdn)                                                                                                  |
+| refreshCdn  | 否       |            | 刷新 CDN 相关配置，参考 [refreshCdn](#refreshCdn)，如果想刷新 CDN，必须在同步部署情况下，也就是 async 必须配置为 false.                      |
+| pushCdn     | 否       |            | 预热 CDN 相关配置，参考 [pushCdn](#pushCdn)，如果想预热 CDN，必须在同步部署情况下，也就是 async 必须配置为 false.                            |
 | https       | 否       |            | Https 加速配置，参考：https://cloud.tencent.com/document/api/228/30987#Https                                                                 |
 | cacheKey    | 否       |            | 节点缓存键配置，参考：https://cloud.tencent.com/document/api/228/30987#CacheKey                                                              |
 | cache       | 否       |            | 缓存过期时间配置，参考： https://cloud.tencent.com/document/api/228/30987#Cache                                                              |
