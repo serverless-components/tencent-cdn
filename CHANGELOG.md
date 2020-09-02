@@ -1,3 +1,10 @@
+## [0.0.4](https://github.com/serverless-components/tencent-cdn/compare/v0.0.3...v0.0.4) (2020-09-02)
+
+
+### Bug Fixes
+
+* update tencnet-component-toolkit for api mark ([7734645](https://github.com/serverless-components/tencent-cdn/commit/77346454121e4cb37df471b07c2601ed5b830f56))
+
 ## [0.0.3](https://github.com/serverless-components/tencent-cdn/compare/v0.0.2...v0.0.3) (2020-08-27)
 
 
