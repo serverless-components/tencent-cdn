@@ -1,10 +1,5 @@
 {
-  "name": "@serverless/cdn",
-  "description": "Easily provision Tencent CDN.",
-  "main": "serverless.js",
-  "author": "Tencent Cloud, Inc.",
-  "license": "MIT",
   "dependencies": {
-    "tencent-component-toolkit": "^1.15.7"
+    "tencent-component-toolkit": "^1.16.2"
   }
 }

@@ -21,7 +21,7 @@ class ServerlessComponent extends Component {
   }
 
   async deploy(inputs) {
-    console.log(`Deploying CDN...`)
+    console.log(`Deploying CDN`)
 
     // get tencent cloud credentials
     const credentials = this.getCredentials()
@@ -47,7 +47,6 @@ class ServerlessComponent extends Component {
       console.log(`CDN domian not exist`)
       return {}
     }
-    console.log(`Removing CDN domain ${domain}...`)
 
     // get tencent cloud credentials
     const credentials = this.getCredentials()

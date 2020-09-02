@@ -1,6 +1,6 @@
 # 腾讯云 CDN 组件
 
-简体中文 | [English](./README.en.md)
+简体中文 | [English](https://github.com/serverless-components/tencent-cdn/tree/master/README.en.md)
 
 ## 简介
 
@@ -21,7 +21,7 @@
 
 通过 npm 安装 serverless
 
-```shell
+```bash
 $ npm install -g serverless
 ```
 
@@ -29,7 +29,7 @@ $ npm install -g serverless
 
 本地创建 `serverless.yml` 文件，在其中进行如下配置
 
-```shell
+```bash
 $ touch serverless.yml
 ```
 
@@ -52,11 +52,11 @@ inputs:
     originPullProtocol: http
 ```
 
-- [更多配置](./docs/configure.md)
+- [更多配置](https://github.com/serverless-components/tencent-cdn/tree/master/docs/configure.md)
 
 ### 3. 部署
 
-如您的账号未[登陆](https://cloud.tencent.com/login)或[注册](https://cloud.tencent.com/register)腾讯云，您可以直接通过`微信`扫描命令行中的二维码进行授权登陆和注册。
+如您的账号未[登录](https://cloud.tencent.com/login)或[注册](https://cloud.tencent.com/register)腾讯云，您可以直接通过`微信`扫描命令行中的二维码进行授权登陆和注册。
 
 同时需要到 [内容分发网络](https://console.cloud.tencent.com/cdn) 开通该服务。
 
@@ -76,7 +76,7 @@ $ sls remove
 
 当前默认支持 CLI 扫描二维码登录，如您希望配置持久的环境变量/秘钥信息，也可以本地创建 `.env` 文件
 
-```shell
+```bash
 $ touch .env # 腾讯云的配置信息
 ```
 

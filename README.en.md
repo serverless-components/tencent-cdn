@@ -1,6 +1,6 @@
 # Tencent CDN Component
 
-[简体中文](./README.md) | English
+[简体中文](https://github.com/serverless-components/tencent-cdn/tree/master/README.md) | English
 
 Easily provision Tencent CDN using [Serverless Components](https://github.com/serverless/components).
 
@@ -16,7 +16,7 @@ Easily provision Tencent CDN using [Serverless Components](https://github.com/se
 
 Install the Serverless Framework:
 
-```shell
+```bash
 $ npm install -g serverless
 ```
 
@@ -24,7 +24,7 @@ $ npm install -g serverless
 
 Just create the following simple boilerplate:
 
-```shell
+```bash
 $ touch serverless.yml
 $ touch .env           # your Tencent api keys
 ```
@@ -62,7 +62,7 @@ inputs:
     originPullProtocol: http
 ```
 
-- [More configuration](./docs/configure.md)
+- [More configuration](https://github.com/serverless-components/tencent-cdn/tree/master/docs/configure.md)
 
 ### 4. Deploy
 
