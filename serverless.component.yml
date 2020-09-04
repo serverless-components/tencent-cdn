@@ -1,10 +1,10 @@
 name: cdn
-version: 0.0.4
-author: Tencent Cloud, Inc
-org: Tencent Cloud, Inc
+version: 0.0.5
+author: 'Tencent Cloud, Inc'
+org: 'Tencent Cloud, Inc'
 description: Easily provision Tencent CDN.
-keywords: tencent, serverless, cdn
-repo: https://github.com/serverless-components/tencent-cdn
-readme: https://github.com/serverless-components/tencent-cdn/tree/master/README.md
+keywords: 'tencent, serverless, cdn'
+repo: 'https://github.com/serverless-components/tencent-cdn'
+readme: 'https://github.com/serverless-components/tencent-cdn/tree/master/README.md'
 license: MIT
 main: ./src
