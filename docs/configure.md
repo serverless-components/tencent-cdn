@@ -22,6 +22,11 @@ inputs:
       - origin.site.com
     originType: cos
     originPullProtocol: https
+  https:
+    switch: on
+    http2: on
+    certInfo:
+      certId: 'abc'
   refreshCdn:
     urls:
       - https://abc.com
@@ -59,13 +64,6 @@ inputs:
     switch: on
     redirectType: https
     redirectStatusCode: 301
-  https:
-    switch: on
-    http2: on
-    certInfo:
-      certId: 'abc'
-      # certificate: 'xxx'
-      # privateKey: 'xxx'
 ```
 
 ### CDN 配置
