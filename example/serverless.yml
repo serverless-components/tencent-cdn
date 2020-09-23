@@ -21,6 +21,6 @@ inputs:
     switch: on
     http2: on
     certInfo:
-      certId: 'abc'
+      certId: 'Z67aCPcj'
       # certificate: 'xxx'
       # privateKey: 'xxx'
