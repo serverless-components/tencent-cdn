@@ -1,3 +1,10 @@
+## [0.0.7](https://github.com/serverless-components/tencent-cdn/compare/v0.0.6...v0.0.7) (2020-10-13)
+
+
+### Bug Fixes
+
+* update deps ([dbdcaea](https://github.com/serverless-components/tencent-cdn/commit/dbdcaea320552dc417cfe76c044224c88270e479))
+
 ## [0.0.6](https://github.com/serverless-components/tencent-cdn/compare/v0.0.5...v0.0.6) (2020-09-23)
 
 
